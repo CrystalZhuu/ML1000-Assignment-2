@@ -36,7 +36,7 @@ output:
 ```{r, echo=FALSE,message=FALSE,warning=FALSE}
 library(tidyverse)
 library("ggplot2")
-data=read.csv("US_Superstore_data.csv")
+data=read.csv("US_Superstore_data.csv", stringsAsFactors = T)
 data$Order.Date=as.Date(data$Order.Date)
 data$Ship.Date=as.Date(data$Ship.Date)
 
@@ -58,6 +58,31 @@ missing_values=paste0(colnames(data),rep("-",ncol(data)),n,rep(" missing values"
 missing_values
 #no missing values
 data_miss=data[!complete.cases(data),]
+```
+
+
+Remove the dot in the column names and replace with "_" to make variable names easier to handle:
+
+```{r, echo=FALSE, warning=FALSE}
+#replace . with _ in colnames
+colnames(data) <- gsub("\\.", "_", colnames(data))
+#check column names have been changed:
+colnames(data)
+```
+
+```{r, echo=FALSE,message=FALSE,warning=FALSE}
+
+data_forcluster=subset(data,select = c(Ship_Mode, Segment,City,
+                                     State,Sub_Category,diff_in_days, Sales,                                       Quantity, Discount, Profit))
+data_forcluster=data_forcluster[sample(1:nrow(data_forcluster),2000,replace = F),]
+
+write.csv(data_forcluster,"US_Superstore_data_forclustering.csv",
+          row.names = F)
+
+library(readr)
+x <- read.csv("https://raw.githubusercontent.com/ML1000-GroupB/Assignment-2/main/US_Superstore_data_forclustering.csv" )
+
+
 ```
 
 
@@ -135,15 +160,6 @@ hist(data$Profit)
 #most of the orders have profits ~1000 (or ~800?), and ~ -800
 ```
 
-
-Remove the dot in the column names and replace with "_" to make variable names easier to handle:
-
-```{r, echo=FALSE, warning=FALSE}
-#replace . with _ in colnames
-colnames(data) <- gsub("\\.", "_", colnames(data))
-#check column names have been changed:
-colnames(data)
-```
 
 
 # Exploratory Data Analysis  
